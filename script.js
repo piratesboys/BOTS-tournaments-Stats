@@ -1,7 +1,7 @@
 
 "use strict";
 
-const TOURNAMENT_ID = "SZ9uqXw7";
+const TOURNAMENT_ID = "0lALXd6V";
 const TOURNAMENT_URL =
   `https://lichess.org/tournament/${TOURNAMENT_ID}`;
 
