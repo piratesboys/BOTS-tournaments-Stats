@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="BOTs tournament stats">
+
+    <title>Hall of Fame | BOTs Tournament</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --stats-bg: #11141b;
+            --stats-panel: #1b202a;
+            --stats-panel-hover: #242b37;
+            --stats-gold: #d6ad60;
+            --stats-text: #f4f0e7;
+            --stats-muted: #9da5b5;
+            --stats-border: #333b49;
+        }
+
+        body {
+            background: var(--stats-bg);
+        }
+
+        .stats-container {
+            width: min(1100px, calc(100% - 32px));
+            margin: auto;
+            padding: 45px 0 75px;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 45px 20px 35px;
+        }
+
+        .hero-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 18px;
+            border-radius: 18px;
+            background: #29251e;
+            color: var(--stats-gold);
+            font-size: 2.4rem;
+        }
+
+        .eyebrow {
+            color: var(--stats-gold);
+            font-size: 0.78rem;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            color: var(--stats-text);
+            font-size: clamp(2.4rem, 6vw, 4rem);
+            line-height: 1.15;
+            margin: 12px 0;
+        }
+
+        .hero p {
+            color: var(--stats-muted);
+            font-size: 1.05rem;
+        }
+
+        .live-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            color: var(--stats-muted);
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #65c994;
+        }
+
+        .overview {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin: 20px 0 32px;
+        }
+
+        .overview-card {
+            padding: 22px;
+            background: var(--stats-panel);
+            border: 1px solid var(--stats-border);
+            border-radius: 14px;
+        }
+
+        .overview-card .icon {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .overview-label {
+            color: var(--stats-muted);
+            font-size: 0.88rem;
+        }
+
+        .overview-value {
+            color: var(--stats-text);
+            font-size: 2rem;
+            font-weight: 750;
+            margin-top: 4px;
+        }
+
+        .section-heading {
+            margin: 35px 0 18px;
+        }
+
+        .section-heading h2 {
+            color: var(--stats-text);
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .section-heading p {
+            color: var(--stats-muted);
+            font-size: 0.9rem;
+        }
+
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin: 25px 0 18px;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tab {
+            padding: 11px 17px;
+            background: var(--stats-panel);
+            color: var(--stats-muted);
+            border: 1px solid var(--stats-border);
+            border-radius: 9px;
+            font: inherit;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--stats-text);
+            background: var(--stats-panel-hover);
+        }
+
+        .tab.active {
+            color: #171717;
+            background: var(--stats-gold);
+            border-color: var(--stats-gold);
+            font-weight: bold;
+        }
+
+        .refresh-button {
+            padding: 11px 16px;
+            color: var(--stats-gold);
+            background: transparent;
+            border: 1px solid var(--stats-gold);
+            border-radius: 9px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .refresh-button:hover {
+            background: #29251e;
+        }
+
+        .refresh-button:disabled {
+            opacity: 0.5;
+            cursor: wait;
+        }
+
+        .ranking-card {
+            overflow: hidden;
+            background: var(--stats-panel);
+            border: 1px solid var(--stats-border);
+            border-radius: 14px;
+        }
+
+        .ranking-top {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--stats-border);
+        }
+
+        .ranking-top h3 {
+            color: var(--stats-text);
+            font-size: 1.1rem;
+        }
+
+        .ranking-top p {
+            margin-top: 5px;
+            color: var(--stats-muted);
+            font-size: 0.85rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .ranking-table th,
+        .ranking-table td {
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--stats-border);
+        }
+
+        .ranking-table th {
+            background: #171b23;
+            color: var(--stats-muted);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            white-space: nowrap;
+        }
+
+        .ranking-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .ranking-table tbody tr:hover {
+            background: var(--stats-panel-hover);
+        }
+
+        .rank-cell {
+            width: 65px;
+            color: var(--stats-muted);
+            font-weight: bold;
+        }
+
+        .rank-medal {
+            font-size: 1.25rem;
+        }
+
+        .entity-link {
+            color: var(--stats-text);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .entity-link:hover {
+            color: var(--stats-gold);
+        }
+
+        .score-cell {
+            color: var(--stats-gold);
+            text-align: right;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .count-cell {
+            color: var(--stats-muted);
+            text-align: center;
+        }
+
+        .table-message {
+            color: var(--stats-muted);
+            text-align: center;
+            padding: 30px 15px !important;
+        }
+
+        .page-status {
+            margin: 15px 0;
+            color: var(--stats-muted);
+            font-size: 0.85rem;
+            overflow-wrap: anywhere;
+        }
+
+        .page-status.error {
+            color: #ffaaa5;
+        }
+
+        .tournament-info {
+            margin-top: 25px;
+            padding: 18px 20px;
+            background: var(--stats-panel);
+            border: 1px solid var(--stats-border);
+            border-radius: 12px;
+        }
+
+        .tournament-info summary {
+            color: var(--stats-text);
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .tournament-info ul {
+            margin: 15px 0 0 20px;
+            color: var(--stats-muted);
+        }
+
+        .tournament-info li {
+            margin: 8px 0;
+        }
+
+        .tournament-info a {
+            color: var(--stats-gold);
+        }
+
+        .footer-note {
+            text-align: center;
+            color: var(--stats-muted);
+            font-size: 0.8rem;
+            margin-top: 30px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 700px) {
+            .overview {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .overview-card {
+                display: grid;
+                grid-template-columns: 45px 1fr;
+                align-items: center;
+                padding: 16px;
+            }
+
+            .overview-card .icon {
+                grid-row: span 2;
+                margin: 0;
+            }
+
+            .overview-value {
+                font-size: 1.6rem;
+            }
+
+            .hero {
+                padding: 30px 10px;
+            }
+
+            .toolbar {
+                align-items: stretch;
+            }
+
+            .tabs {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .refresh-button {
+                width: 100%;
+            }
+
+            .ranking-table th,
+            .ranking-table td {
+                padding: 13px 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="top-nav">
+        <a href="index.html" class="logo">
+            <span>♟</span>
+            Home
+        </a>
+
+        <a href="diffusion.html" class="button">
+            broadcast
+        </a>
+
+    </nav>
+
+    <main class="stats-container">
+
+        <header class="hero">
+            <div class="hero-icon">♟</div>
+
+            <div class="eyebrow">Lichess BOTs Tournaments</div>
+
+            <h1>Hall of Fame</h1>
+
+            <p>
+                Every tournament. Every point. One leaderboard.
+            </p>
+
+            <div class="live-status">
+                <span class="status-dot"></span>
+                <span id="live-label">Connecting to Lichess...</span>
+            </div>
+        </header>
+
+        <section class="overview" aria-label="Statistics overview">
+
+            <article class="overview-card">
+                <div class="icon">♜</div>
+                <div class="overview-label">Teams ranked</div>
+                <div class="overview-value" id="team-count">—</div>
+            </article>
+
+            <article class="overview-card">
+                <div class="icon">♙</div>
+                <div class="overview-label">Players ranked</div>
+                <div class="overview-value" id="player-count">—</div>
+            </article>
+
+            <article class="overview-card">
+                <div class="icon">🏆</div>
+                <div class="overview-label">Tournaments loaded</div>
+                <div class="overview-value" id="tournament-count">0</div>
+            </article>
+
+        </section>
+
+        <div class="section-heading">
+            <h2>Global Rankings</h2>
+            <p>Scores accumulated across the selected tournaments.</p>
+        </div>
+
+        <div class="toolbar">
+
+            <div class="tabs" role="tablist" aria-label="Leaderboard">
+                <button
+                    type="button"
+                    class="tab active"
+                    id="teams-tab"
+                    role="tab"
+                    aria-selected="true"
+                    aria-controls="teams-panel">
+                    ♜ Teams
+                </button>
+
+                <button
+                    type="button"
+                    class="tab"
+                    id="players-tab"
+                    role="tab"
+                    aria-selected="false"
+                    aria-controls="players-panel">
+                    ♙ Players
+                </button>
+            </div>
+
+            <button type="button" class="refresh-button" id="refresh-button">
+                ↻ Refresh scores
+            </button>
+
+        </div>
+
+        <p id="status" class="page-status" role="status" aria-live="polite">
+            Loading rankings...
+        </p>
+
+        <section id="teams-panel" role="tabpanel" aria-labelledby="teams-tab">
+            <div class="ranking-card">
+
+                <div class="ranking-top">
+                    <h3>Team leaderboard</h3>
+                    <p>The teams with the most cumulative points.</p>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Team</th>
+                                <th style="text-align:right">Total points</th>
+                                <th style="text-align:center">Events</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="teams-body">
+                            <tr>
+                                <td colspan="4" class="table-message">
+                                    Loading team rankings...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="players-panel"
+                 class="hidden"
+                 role="tabpanel"
+                 aria-labelledby="players-tab">
+
+            <div class="ranking-card">
+
+                <div class="ranking-top">
+                    <h3>Player leaderboard</h3>
+                    <p>The players with the most individual points.</p>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="ranking-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th style="text-align:right">Total points</th>
+                                <th style="text-align:center">Events</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="players-body">
+                            <tr>
+                                <td colspan="4" class="table-message">
+                                    Loading player rankings...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+        <details class="tournament-info">
+            <summary>Included tournaments</summary>
+            <ul id="tournament-list"></ul>
+        </details>
+
+        <p class="footer-note">
+            Powered by Lichess · GP Sacrifice Team Battle
+        </p>
+
+    </main>
+
+    <script>
+    (() => {
+        "use strict";
+
+        /*
+         * ADD YOUR TOURNAMENTS HERE.
+         * Copy the ID from the end of each Lichess tournament URL.
+         *
+         * Example:
+         * https://lichess.org/tournament/jOoF0hen
+         * ID: jOoF0hen
+         */
+
+        const TOURNAMENTS = [
+            "kMmGXrCY",
+            "E78x8wcW",
+            "j2eW2DRz",
+            "0lALXd6V",
+            "izA1eevC",
+            "Rd8OpAir",
+            "aeoo9IPr",
+            "L2RLtG2q",
+            "gf6jvI6v"
+
+            // Add more tournament IDs below:
+            // "AbCd1234",
+            // "EfGh5678",
+        ];
+
+        const API = "https://lichess.org/api/tournament";
+
+        const $ = id => document.getElementById(id);
+
+        const teamsBody = $("teams-body");
+        const playersBody = $("players-body");
+        const status = $("status");
+        const refreshButton = $("refresh-button");
+
+        let loading = false;
+
+        function showMessage(body, message) {
+            body.replaceChildren();
+
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+
+            cell.colSpan = 4;
+            cell.className = "table-message";
+            cell.textContent = message;
+
+            row.appendChild(cell);
+            body.appendChild(row);
+        }
+
+        async function fetchJson(url) {
+            const response = await fetch(url, {
+                headers: { Accept: "application/json" },
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        async function fetchText(url) {
+            const response = await fetch(url, {
+                headers: { Accept: "application/x-ndjson" },
+                cache: "no-store"
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            return response.text();
+        }
+
+        function parseNdjson(text) {
+            return text
+                .split(/\r?\n/)
+                .filter(line => line.trim())
+                .map(line => JSON.parse(line));
+        }
+
+        function addTeam(map, team, tournamentId) {
+            const id = team.id || team.team?.id;
+            const score = Number(
+                team.score ?? team.points ?? team.teamScore
+            );
+
+            if (!id || !Number.isFinite(score)) return;
+
+            if (!map.has(id)) {
+                map.set(id, {
+                    id,
+                    name: team.name || team.team?.name || id,
+                    points: 0,
+                    events: new Set()
+                });
+            }
+
+            const entry = map.get(id);
+            entry.points += score;
+            entry.events.add(tournamentId);
+
+            if (team.name || team.team?.name) {
+                entry.name = team.name || team.team.name;
+            }
+        }
+
+        function addPlayer(map, result, tournamentId) {
+            const username = result.username || result.user?.name;
+
+            const score = Number(
+                result.score ?? result.points
+            );
+
+            if (!username || !Number.isFinite(score)) return;
+
+            const key = username.toLowerCase();
+
+            if (!map.has(key)) {
+                map.set(key, {
+                    username,
+                    points: 0,
+                    events: new Set()
+                });
+            }
+
+            const entry = map.get(key);
+            entry.points += score;
+            entry.events.add(tournamentId);
+        }
+
+        async function loadTournament(id, teamTotals, playerTotals) {
+            // Team standings endpoint.
+            const teamData = await fetchJson(
+                `${API}/${encodeURIComponent(id)}/teams`
+            );
+
+            const teams = Array.isArray(teamData.teams)
+                ? teamData.teams
+                : [];
+
+            for (const team of teams) {
+                addTeam(teamTotals, team, id);
+            }
+
+            // Individual tournament results are NDJSON.
+            const resultText = await fetchText(
+                `${API}/${encodeURIComponent(id)}/results?nb=1000`
+            );
+
+            const results = parseNdjson(resultText);
+
+            for (const result of results) {
+                addPlayer(playerTotals, result, id);
+            }
+        }
+
+        function medal(rank) {
+            if (rank === 0) return "🥇";
+            if (rank === 1) return "🥈";
+            if (rank === 2) return "🥉";
+            return String(rank + 1).padStart(2, "0");
+        }
+
+        function renderRanking(body, entries, type) {
+            body.replaceChildren();
+
+            entries.sort((a, b) =>
+                b.points - a.points ||
+                (type === "teams" ? a.name : a.username)
+                    .localeCompare(type === "teams" ? b.name : b.username)
+            );
+
+            if (!entries.length) {
+                showMessage(body, "No scores available.");
+                return;
+            }
+
+            entries.forEach((entry, index) => {
+                const row = document.createElement("tr");
+
+                const rank = document.createElement("td");
+                rank.className = "rank-cell";
+
+                if (index < 3) {
+                    const badge = document.createElement("span");
+                    badge.className = "rank-medal";
+                    badge.textContent = medal(index);
+                    rank.appendChild(badge);
+                } else {
+                    rank.textContent = medal(index);
+                }
+
+                const nameCell = document.createElement("td");
+                const link = document.createElement("a");
+                link.className = "entity-link";
+
+                if (type === "teams") {
+                    link.href =
+                        `https://lichess.org/team/${encodeURIComponent(entry.id)}`;
+                    link.textContent = entry.name;
+                } else {
+                    link.href =
+                        `https://lichess.org/@/${encodeURIComponent(entry.username)}`;
+                    link.textContent = entry.username;
+                }
+
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+
+                nameCell.appendChild(link);
+
+                const points = document.createElement("td");
+                points.className = "score-cell";
+                points.textContent = Math.round(entry.points).toLocaleString();
+
+                const events = document.createElement("td");
+                events.className = "count-cell";
+                events.textContent = entry.events.size;
+
+                row.append(rank, nameCell, points, events);
+                body.appendChild(row);
+            });
+        }
+
+        function renderTournamentList() {
+            const list = $("tournament-list");
+            list.replaceChildren();
+
+            TOURNAMENTS.forEach(id => {
+                const item = document.createElement("li");
+                const link = document.createElement("a");
+
+                link.href =
+                    `https://lichess.org/tournament/${encodeURIComponent(id)}`;
+                link.target = "_blank";
+                link.rel = "noopener noreferrer";
+                link.textContent = id;
+
+                item.appendChild(link);
+                list.appendChild(item);
+            });
+
+            $("tournament-count").textContent = "0";
+        }
+
+        async function refreshRankings() {
+            if (loading) return;
+
+            loading = true;
+            refreshButton.disabled = true;
+            status.classList.remove("error");
+
+            $("live-label").textContent = "Updating standings...";
+            status.textContent = "Fetching data from Lichess...";
+
+            const teamTotals = new Map();
+            const playerTotals = new Map();
+
+            let successful = 0;
+            const errors = [];
+
+            try {
+                for (const id of TOURNAMENTS) {
+                    status.textContent =
+                        `Loading tournament ${id}...`;
+
+                    try {
+                        await loadTournament(
+                            id,
+                            teamTotals,
+                            playerTotals
+                        );
+
+                        successful++;
+                    } catch (error) {
+                        console.error(`Tournament ${id}:`, error);
+                        errors.push(id);
+                    }
+                }
+
+                renderRanking(
+                    teamsBody,
+                    [...teamTotals.values()],
+                    "teams"
+                );
+
+                renderRanking(
+                    playersBody,
+                    [...playerTotals.values()],
+                    "players"
+                );
+
+                $("team-count").textContent = teamTotals.size;
+                $("player-count").textContent = playerTotals.size;
+                $("tournament-count").textContent = successful;
+
+                if (errors.length) {
+                    status.classList.add("error");
+                    status.textContent =
+                        `${successful}/${TOURNAMENTS.length} tournaments loaded. ` +
+                        `Failed: ${errors.join(", ")}. Check the browser console.`;
+
+                    $("live-label").textContent = "Some data unavailable";
+                } else {
+                    status.textContent =
+                        `All ${successful} tournament(s) loaded · ` +
+                        `Updated at ${new Date().toLocaleTimeString()}`;
+
+                    $("live-label").textContent = "Standings updated";
+                }
+
+            } catch (error) {
+                console.error(error);
+                status.classList.add("error");
+                status.textContent =
+                    "Unable to load standings. Please try again later.";
+                $("live-label").textContent = "Connection unavailable";
+
+            } finally {
+                loading = false;
+                refreshButton.disabled = false;
+            }
+        }
+
+        $("teams-tab").addEventListener("click", () => {
+            $("teams-panel").classList.remove("hidden");
+            $("players-panel").classList.add("hidden");
+
+            $("teams-tab").classList.add("active");
+            $("players-tab").classList.remove("active");
+
+            $("teams-tab").setAttribute("aria-selected", "true");
+            $("players-tab").setAttribute("aria-selected", "false");
+        });
+
+        $("players-tab").addEventListener("click", () => {
+            $("players-panel").classList.remove("hidden");
+            $("teams-panel").classList.add("hidden");
+
+            $("players-tab").classList.add("active");
+            $("teams-tab").classList.remove("active");
+
+            $("players-tab").setAttribute("aria-selected", "true");
+            $("teams-tab").setAttribute("aria-selected", "false");
+        });
+
+        refreshButton.addEventListener("click", refreshRankings);
+
+        renderTournamentList();
+        refreshRankings();
+
+        // Automatic refresh every 60 seconds.
+        setInterval(refreshRankings, 60000);
+    })();
+    </script>
+
+</body>
+</html>

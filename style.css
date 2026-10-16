@@ -1,0 +1,340 @@
+/* =========================
+   GENERAL SETTINGS
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #111318;
+    --surface: #1b1e26;
+    --surface-hover: #242834;
+    --gold: #d6ad60;
+    --gold-hover: #edc77e;
+    --text: #f2f0e9;
+    --text-muted: #a8acb8;
+    --border: #303440;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+
+    padding: 18px 8%;
+    background: #171920;
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: var(--text);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.logo span {
+    color: var(--gold);
+    font-size: 1.8rem;
+}
+
+.top-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.top-nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+
+    padding: 9px 15px;
+    border-radius: 8px;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+.top-nav-links a:hover {
+    color: var(--gold);
+    background: var(--surface-hover);
+}
+
+.top-nav-links a.active {
+    color: var(--gold);
+    background: #29251e;
+}
+
+
+/* =========================
+   HEADER / HERO
+========================= */
+
+header {
+    text-align: center;
+
+    padding: 95px 20px 80px;
+
+    background:
+        radial-gradient(
+            ellipse at top,
+            #30303a 0%,
+            #191b23 48%,
+            var(--background) 100%
+        );
+
+    border-bottom: 1px solid var(--border);
+}
+
+header h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.2;
+    margin-bottom: 20px;
+    color: var(--gold);
+    letter-spacing: -1px;
+}
+
+header p {
+    max-width: 650px;
+    margin: 0 auto;
+
+    color: var(--text-muted);
+    font-size: 1.1rem;
+}
+
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+main {
+    width: min(100% - 40px, 1000px);
+    margin: 0 auto;
+    padding: 25px 0 70px;
+}
+
+section {
+    margin: 45px 0;
+}
+
+section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+    padding-left: 14px;
+
+    border-left: 4px solid var(--gold);
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.card {
+    background: var(--surface);
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    padding: 28px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: #76613e;
+    background: var(--surface-hover);
+}
+
+.card p {
+    color: var(--text-muted);
+    margin-bottom: 22px;
+    font-size: 1rem;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+.button {
+    display: inline-block;
+
+    padding: 11px 20px;
+    border-radius: 8px;
+
+    background: var(--gold);
+    color: #171717;
+
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+
+    border: 1px solid var(--gold);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.button:hover {
+    background: var(--gold-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(214, 173, 96, 0.2);
+}
+
+.button:focus-visible,
+.top-nav-links a:focus-visible,
+.logo:focus-visible {
+    outline: 2px solid var(--gold-hover);
+    outline-offset: 4px;
+}
+
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+
+@media (max-width: 600px) {
+
+    .top-nav {
+        flex-direction: column;
+        padding: 16px 12px;
+        gap: 12px;
+    }
+
+    .logo {
+        font-size: 1.1rem;
+    }
+
+    .top-nav-links {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    header {
+        padding: 65px 18px 55px;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    main {
+        width: calc(100% - 28px);
+        padding-top: 10px;
+    }
+
+    section {
+        margin: 35px 0;
+    }
+
+    section h2 {
+        font-size: 1.35rem;
+    }
+
+    .card {
+        padding: 22px;
+    }
+
+    .button {
+        max-width: 100%;
+    }
+}
+
+
+/* =========================
+   REDUCED MOTION
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* =========================
+   COMING SOON PAGE
+========================= */
+
+.coming-soon {
+    min-height: 80vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.coming-soon-content {
+    max-width: 650px;
+    padding: 45px 25px;
+}
+
+.chess-icon {
+    font-size: 5rem;
+    color: var(--gold);
+    margin-bottom: 20px;
+}
+
+.coming-soon h1 {
+    font-size: clamp(2.5rem, 7vw, 4rem);
+    color: var(--gold);
+    margin-bottom: 20px;
+}
+
+.coming-soon p {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    margin-bottom: 12px;
+}
+
+.coming-soon .subtitle {
+    margin-bottom: 30px;
+}
+
+.coming-soon .button {
+    margin-top: 10px;
+}
